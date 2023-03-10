@@ -68,15 +68,29 @@ world = {};
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
+        // Just playing around with each circle radius
+        let radius = entity["radius"]*0.5 + ( Math.random() * 10);
+
         beginPath();              
         lineWidth = 3;
         var x = entity["x"];
         var y = entity["y"];
-        //moveTo(x,y);
+        // moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        arc(x, y, radius, 0, 2.0 * Math.PI, false);
+        // arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        let randomValue = Math.random(); 
+        
+        // Draw outline circle with probability 0.5 else draw filled circle
+        if (randomValue > 0.5) {
+            stroke();
+        }
+        else {
+            
+            fill();
+        }
+
     }
 }
 
@@ -146,9 +160,12 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
+    let url = "/entity/" + entity;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+    sendJSONXMLHTTPRequest(url, data, function (res) {
+        drawNextFrame();
+    });
 }
 
 var counter = 0;
