@@ -101,7 +101,11 @@ def get_entity(entity):
 def clear():
     '''Clear the world out!'''
     myWorld.clear()
-    return json.dumps(myWorld.world())
+    # return json.dumps(myWorld.world())
+
+    # redirects to main screen.
+    return redirect("static/index.html", code=200)
+
 
 if __name__ == "__main__":
     app.run()

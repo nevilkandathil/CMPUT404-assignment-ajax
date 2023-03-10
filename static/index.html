@@ -87,14 +87,15 @@ function drawCircle(context,entity) {
         // arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
         let randomValue = Math.random(); 
         
-        // Draw outline circle with probability 0.5 else draw filled circle
-        if (randomValue > 0.5) {
-            stroke();
-        }
-        else {
+        // // Draw outline circle with probability 0.5 else draw filled circle
+        // if (randomValue > 0.8) {
+        //     stroke();
+        // }
+        // else {
             
-            fill();
-        }
+        //     fill();
+        // }
+        fill();
 
     }
 }
@@ -112,7 +113,7 @@ function prepEntity(entity) {
 function clearFrame() {
     with(context) {
 	moveTo(0,0);
-	fillStyle = "#000";
+	fillStyle = "#edede9";
 	fillRect(0,0,W,H);
     }
 
@@ -280,27 +281,38 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 // DONE!!!
+// mouse.mousedowners.push(function(x,y,clicked,e) {
+//     addEntityWithoutName({'x':x,'y':y,'colour':'#68EDC6'});
+// });
+
+// mouse.mouseuppers.push(function(x,y,clicked,e) {
+//     addEntityWithoutName({'x':x,'y':y,'colour':'#f72585'});
+// });
+
+// mouse.mousedraggers.push(function(x,y,clicked,e) {
+//     addEntityWithoutName({'x':x,'y':y,'colour':'#fee440',
+//                           'radius':10});
+// });
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'#68EDC6'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#b5838d'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'#f72585'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#e5989b'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'#fee440',
+    addEntityWithoutName({'x':x,'y':y,'colour':'#ffcdb2',
                           'radius':10});
 });
-
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
     sendJSONXMLHTTPRequest("GET", "/world", null, (jsonData) => {
         world = jsonData;
+        drawNextFrame();
+        drawFrame();
     });
-    drawNextFrame();
-    drawFrame();
 }
 
 // 30 frames per second
