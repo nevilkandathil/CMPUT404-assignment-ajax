@@ -39,7 +39,10 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
             try {
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
+                    // https://www.w3schools.com/js/js_json_parse.asp
+                    let jsonData = JSON.parse(xhr.responseText);
                     //XXX: Pass the data to the callback!
+                    callback(jsonData);
                 }
             } 
             catch(e) {
@@ -47,9 +50,16 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
             }
         }
     };
+    // https://stackoverflow.com/a/9713078
+    // Author: Ed Heal (https://stackoverflow.com/users/892256/ed-heal)
     //XXX: POST to a URL
+    xhr.open("POST", url, true);     // initialize new request with async: true
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    // Send POST request
+    xhr.send(objects);
 }
 
 
