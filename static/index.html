@@ -32,14 +32,19 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 
-function sendJSONXMLHTTPRequest(url, objects, callback) {
+function sendJSONXMLHTTPRequest(method="POST", url, objects, callback) {
+    // console.log("url: ", url, method);
+    // console.log("objects: ", objects);
+
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState==4) {
             try {
+                console.log("code: ", xhr.status);
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
                     // https://www.w3schools.com/js/js_json_parse.asp
+                    // console.log("response:", xhr.responseText);
                     let jsonData = JSON.parse(xhr.responseText);
                     //XXX: Pass the data to the callback!
                     callback(jsonData);
@@ -53,13 +58,13 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     // https://stackoverflow.com/a/9713078
     // Author: Ed Heal (https://stackoverflow.com/users/892256/ed-heal)
     //XXX: POST to a URL
-    xhr.open("POST", url, true);     // initialize new request with async: true
+    xhr.open(method, url);     // initialize new request with async: true
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     // Send POST request
-    xhr.send(objects);
+    xhr.send(JSON.stringify(objects));
 }
 
 
@@ -161,9 +166,10 @@ function getPosition(e) {
 function addEntity(entity, data) {
     world[entity] = data;
     let url = "/entity/" + entity;
-    drawNextFrame(); // (but should we?)
+    // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest(url, data, function (res) {
+    // Uses PUT request to update entity which already exists
+    sendJSONXMLHTTPRequest("PUT", url, data, (jsonData) => {
         drawNextFrame();
     });
 }
@@ -211,7 +217,7 @@ mouse = (function() {
                 var pos = getPosition(e);
                 var x = pos[0];
                 var y = pos[1];
-	        self.clicked = 1;
+	            self.clicked = 1;
                 self.callListeners(self.mousedowners,x,y,self.clicked,e);
                 //addEntityWithoutName({'x':x,'y':y,'colour':'red'});
             }
@@ -223,8 +229,8 @@ mouse = (function() {
                 var pos = getPosition(e);
                 var x = pos[0];
                 var y = pos[1];
-	        //self.poppin(x,y);
-	        self.clicked = 0;
+                //self.poppin(x,y);
+                self.clicked = 0;
                 self.selected = -1;
                 self.callListeners(self.mouseuppers,x,y,self.clicked,e);
                 //addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
@@ -246,7 +252,7 @@ mouse = (function() {
                 var y = pos[1];
 	        if (self.clicked != 0) {
 	            //self.squeakin(x,y);
-                    self.callListeners(self.mousedraggers,x,y,self.clicked,e);
+                self.callListeners(self.mousedraggers,x,y,self.clicked,e);
 	        }
                 self.callListeners(self.mousemovers,x,y,self.clicked,e);
             }            
@@ -273,22 +279,27 @@ mouse = (function() {
 
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
+// DONE!!!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#68EDC6'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#f72585'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    addEntityWithoutName({'x':x,'y':y,'colour':'#fee440',
                           'radius':10});
 });
 
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+    sendJSONXMLHTTPRequest("GET", "/world", null, (jsonData) => {
+        world = jsonData;
+    });
+    drawNextFrame();
     drawFrame();
 }
 
